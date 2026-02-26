@@ -17,6 +17,7 @@ module JR
     end
 
     def load_textures
+      GSDL::TextureManager.load("player", "gfx/player.png")
     end
   end
 end
