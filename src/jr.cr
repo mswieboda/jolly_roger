@@ -1,5 +1,6 @@
 require "game_sdl"
 
+require "./jr/player"
 require "./jr/game"
 
 module JR

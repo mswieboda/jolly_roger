@@ -31,13 +31,11 @@ $(PACKER_BIN):
 
 install_gsdl_tools: $(PACKER_BIN)
 
-$(PACKER_FILE): $(PACKER_BIN)
+packer: $(PACKER_BIN)
 	@echo "Packing assets via GameSDL packer..."
 	./$(PACKER_BIN)
 
-packer: $(PACKER_FILE)
-
-release: $(PACKER_FILE)
+release:
 	@echo "Building release..."
 	$(MKDIR_CMD) $(BUILD_DIR)
 	$(CRYSTAL_COMPILER) build $(SOURCE_DIR)/$(SOURCE_FILE).cr -o $(BUILD_DIR)/$(SOURCE_FILE) --release --link-flags "$(LINKFLAGS)" --no-debug
