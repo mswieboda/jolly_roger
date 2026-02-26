@@ -1,0 +1,18 @@
+name: jr
+version: 0.1.0
+
+authors:
+  - Matt Swieboda <mswieboda@users.noreply.github.com>
+
+targets:
+  jr:
+    main: src/jr.cr
+
+dependencies:
+  game_sdl:
+    github: mswieboda/game_sdl
+    version: 0.62.0
+
+crystal: '>= 1.19.1'
+
+license: MIT
