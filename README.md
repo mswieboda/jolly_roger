@@ -10,7 +10,6 @@ for example for macOS:
 
 ```
 brew install sdl3 sdl3_image sdl3_ttf
-
 ```
 
 will install all required libraries
