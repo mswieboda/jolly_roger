@@ -1,4 +1,4 @@
-# JR
+# Jolly Roger
 
 ## Installation
 
