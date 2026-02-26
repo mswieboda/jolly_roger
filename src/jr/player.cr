@@ -6,12 +6,17 @@ module JR
     Speed = 96
 
     getter idle_timer : GSDL::Timer
+    getter? flip_left
     property? debug = false
 
     def initialize
       super(key: "player", width: 24, height: 40, scale: {2_f32, 2_f32})
 
+      # used in TileMapCollidable
       @use_gravity = false
+
+      # for flipping the texture horizontally from last movement direction
+      @flip_left = false
 
       @idle_timer = GSDL::Timer.new(IdleTime)
       @idle_timer.start
@@ -90,10 +95,12 @@ module JR
       elsif dx > 0_u8
         animate("walk-right")
       elsif dx < 0_u8
-        animate("left")
+        animate("walk-right")
       else
         pause unless playing?("idle")
       end
+
+      @flip_left = playing?("walk-right") && dx != 0 && dx < 0
 
       if idle_timer.done?
         animate("idle")
@@ -106,8 +113,12 @@ module JR
     end
 
     def draw(draw : GSDL::Draw, camera_x : Float32 = 0_f32, camera_y : Float32 = 0_f32, flip_horizontal : Bool = false)
-      # TODO: use new facing_left? to check if we flip_horizontal
-      super(draw: draw, camera_x: camera_x, camera_y: camera_y, flip_horizontal: flip_horizontal)
+      super(
+        draw: draw,
+        camera_x: camera_x,
+        camera_y: camera_y,
+        flip_horizontal: flip_horizontal || flip_left?
+      )
 
       draw_debug(draw: draw, camera_x: camera_x, camera_y: camera_y) if debug?
     end
