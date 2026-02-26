@@ -17,7 +17,12 @@ module JR
     end
 
     def load_textures
+      GSDL::TextureManager.load("tiles", "gfx/tiles.png")
       GSDL::TextureManager.load("player", "gfx/player.png")
+    end
+
+    def load_tile_maps
+      GSDL::TileMapManager.load("map", "gfx/map.json")
     end
   end
 end

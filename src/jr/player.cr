@@ -1,11 +1,17 @@
 module JR
   class Player < GSDL::AnimatedSprite
+    include GSDL::TileMapCollidable
+
     IdleTime = 5.seconds
+    Speed = 96
 
     getter idle_timer : GSDL::Timer
+    property? debug = false
 
     def initialize
       super(key: "player", width: 24, height: 40, scale: {2_f32, 2_f32})
+
+      @use_gravity = false
 
       @idle_timer = GSDL::Timer.new(IdleTime)
       @idle_timer.start
@@ -27,28 +33,63 @@ module JR
       play("down")
     end
 
-    def update(dt : Float32)
-      super(dt)
+    # custom collision box, just the feet of sprite whitespace
+    def collision_bounding_box : GSDL::FRect
+      GSDL::FRect.new(x: 6 * scale_x, y: 26 * scale_y, w: draw_width - 12 * scale_x, h: draw_height - 28 * scale_y)
+    end
 
-      if Keys.pressed?(Keys::W)
-        if Keys.pressed?(Keys::D)
+    def update(dt : Float32, tile_map : GSDL::TileMap)
+      @debug = !@debug if Input.action?(:debug)
+
+      dx, dy = delta_input_movement
+
+      # TODO: make sure when both directions,
+      # use the square root thing for even distance
+      @velocity_x = dx.to_i * Speed
+      @velocity_y = dy.to_i * Speed
+
+      # physics and collision handling
+      move_and_collide(dt, tile_map)
+
+      update_animations(dx, dy)
+
+      # calls AnimatedSprite#update for animation playback
+      super(dt)
+    end
+
+    def delta_input_movement : Tuple(Int8, Int8)
+      dx = 0_i8
+      dy = 0_i8
+
+      dx = -1_i8 if Input.action?(:left)
+      dx = 1_i8 if Input.action?(:right)
+
+      dy = -1_i8 if Input.action?(:up)
+      dy = 1_i8 if Input.action?(:down)
+
+      {dx, dy}
+    end
+
+    def update_animations(dx : Int8, dy : Int8)
+      if dy < 0_u8
+        if dx > 0_u8
           animate("up-right")
-        elsif Keys.pressed?(Keys::A)
+        elsif dx < 0_u8
           animate("up-left")
         else
           animate("up")
         end
-      elsif Keys.pressed?(Keys::S)
-        if Keys.pressed?(Keys::D)
+      elsif dy > 0_u8
+        if dx > 0_u8
           animate("down-right")
-        elsif Keys.pressed?(Keys::A)
+        elsif dx < 0_u8
           animate("down-left")
         else
           animate("down")
         end
-      elsif Keys.pressed?(Keys::D)
+      elsif dx > 0_u8
         animate("walk-right")
-      elsif Keys.pressed?(Keys::A)
+      elsif dx < 0_u8
         animate("left")
       else
         pause unless playing?("idle")
@@ -59,10 +100,30 @@ module JR
       end
     end
 
-
     def animate(animation : String)
       play(animation) if paused? || !playing?(animation)
       idle_timer.restart
+    end
+
+    def draw(draw : GSDL::Draw, camera_x : Float32 = 0_f32, camera_y : Float32 = 0_f32, flip_horizontal : Bool = false)
+      # TODO: use new facing_left? to check if we flip_horizontal
+      super(draw: draw, camera_x: camera_x, camera_y: camera_y, flip_horizontal: flip_horizontal)
+
+      draw_debug(draw: draw, camera_x: camera_x, camera_y: camera_y) if debug?
+    end
+
+    def draw_debug(draw : GSDL::Draw, camera_x : Float32, camera_y : Float32)
+      rect = self.collision_box
+      draw.rect_outline(
+        rect: GSDL::FRect.new(
+          x: rect.x - camera_x,
+          y: rect.y - camera_y,
+          w: rect.w,
+          h: rect.h
+        ),
+        color: GSDL::Color::Lime,
+        z_index: 100
+      )
     end
   end
 end
