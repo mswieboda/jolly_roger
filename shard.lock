@@ -6,5 +6,5 @@ shards:
 
   sdl3:
     git: https://github.com/mswieboda/sdl3.cr.git
-    version: 0.40.0
+    version: 0.40.1
 
