@@ -1,6 +1,8 @@
 module JR
   class NPC < Character
-    def initialize
+    property dialog_key : String?
+
+    def initialize(@dialog_key : String? = nil)
       super(key: "player", width: 24, height: 40)
     end
 

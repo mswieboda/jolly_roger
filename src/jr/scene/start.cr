@@ -53,12 +53,17 @@ module JR
         GSDL::Color::Magenta,
       ]
 
-      13.times do
+      13.times do |i|
         tint = colors.sample
         tint.a = 128
 
         npc = NPC.new
         npc.tint = tint
+
+        if i == 0
+          npc.dialog_key = "blacksmith_intro"
+          npc.tint = GSDL::Color::White # Make the blacksmith distinct
+        end
 
         @npcs << npc
       end
@@ -74,13 +79,32 @@ module JR
       end
 
       @dialog_box = UI::DialogBox.new
-      @dialog_box.start("blacksmith_intro")
     end
 
     def update(dt : Float32)
-      player.update(dt, tile_map)
-      npcs.each(&.update(dt, tile_map))
-      dialog_box.update(dt)
+      if dialog_box.is_active
+        dialog_box.update(dt)
+      else
+        player.update(dt, tile_map)
+        npcs.each(&.update(dt, tile_map))
+      end
+
+      # interaction logic
+      if !dialog_box.is_active && Keys.just_pressed?(Keys::E)
+        npcs.each do |npc|
+          if npc.dialog_key
+            dist_x = player.x - npc.x
+            dist_y = player.y - npc.y
+            dist_sq = dist_x * dist_x + dist_y * dist_y
+
+            # ~48 pixels radius for interaction
+            if dist_sq < 48 * 48
+              dialog_box.start(npc.dialog_key.not_nil!)
+              break
+            end
+          end
+        end
+      end
 
       if Keys.pressed?(Keys::Escape)
         transition_out.start
