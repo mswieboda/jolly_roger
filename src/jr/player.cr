@@ -25,6 +25,7 @@ module JR
 
       # animations
       fps = 4
+      fps_walk = 8
       add("up", [0], fps: fps, loops: false)
       add("up-right", [1], fps: fps, loops: false)
       add("right", [2], fps: fps, loops: false)
@@ -34,7 +35,11 @@ module JR
       add("left", [6], fps: fps, loops: false)
       add("up-left", [7], fps: fps, loops: false)
       add("idle", [4, 8, 9, 10, 11, 4], fps: fps, loops: false)
-      add("walk-right", [2, 12, 13, 14, 15, 16, 17], fps: 8, loops: true)
+      add("walk-up", [0, *(12..17)], fps: fps_walk, loops: true)
+      add("walk-up-right", [1, *(18..23)], fps: fps_walk, loops: true)
+      add("walk-right", [2, *(24..29)], fps: fps_walk, loops: true)
+      add("walk-down-right", [3, *(30..35)], fps: fps_walk, loops: true)
+      add("walk-down", [4, *(36..41)], fps: fps_walk, loops: true)
       play("down")
     end
 
@@ -77,30 +82,24 @@ module JR
 
     def update_animations(dx : Int8, dy : Int8)
       if dy < 0_u8
-        if dx > 0_u8
-          animate("up-right")
-        elsif dx < 0_u8
-          animate("up-left")
+        if dx != 0_u8
+          animate("walk-up-right")
         else
-          animate("up")
+          animate("walk-up")
         end
       elsif dy > 0_u8
-        if dx > 0_u8
-          animate("down-right")
-        elsif dx < 0_u8
-          animate("down-left")
+        if dx != 0_u8
+          animate("walk-down-right")
         else
-          animate("down")
+          animate("walk-down")
         end
-      elsif dx > 0_u8
-        animate("walk-right")
-      elsif dx < 0_u8
+      elsif dx != 0_u8
         animate("walk-right")
       else
         pause unless playing?("idle")
       end
 
-      @flip_left = playing?("walk-right") && dx != 0 && dx < 0
+      @flip_left = dx != 0 && dx < 0
 
       if idle_timer.done?
         animate("idle")
