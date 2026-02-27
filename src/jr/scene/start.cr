@@ -5,6 +5,7 @@ module JR
     getter npcs : Array(NPC)
     getter camera_x : Num = 0
     getter camera_y : Num = 0
+    getter dialog_box : UI::DialogBox
 
     def initialize
       super(:start)
@@ -27,6 +28,9 @@ module JR
       Input.set(:left) { GSDL::Keys.pressed?([GSDL::Keys::A, GSDL::Keys::Left]) }
       Input.set(:down) { GSDL::Keys.pressed?([GSDL::Keys::S, GSDL::Keys::Down]) }
       Input.set(:right) { GSDL::Keys.pressed?([GSDL::Keys::D, GSDL::Keys::Right]) }
+      Input.set(:menu_up) { GSDL::Keys.just_pressed?([GSDL::Keys::W, GSDL::Keys::Up]) }
+      Input.set(:menu_down) { GSDL::Keys.just_pressed?([GSDL::Keys::S, GSDL::Keys::Down]) }
+      Input.set(:menu_select) { GSDL::Keys.just_pressed?([GSDL::Keys::Return, Keys::Space, Keys::E]) }
 
       {% unless flag?(:release) %}
         Input.set(:debug) { GSDL::Keys.just_pressed?(GSDL::Keys::Tab) }
@@ -68,11 +72,15 @@ module JR
         npc.x = rand((npc.width + padding)..(map_width - padding))
         npc.y = rand((npc.height + padding)..(map_height - padding))
       end
+
+      @dialog_box = UI::DialogBox.new
+      @dialog_box.start("blacksmith_intro")
     end
 
     def update(dt : Float32)
       player.update(dt, tile_map)
       npcs.each(&.update(dt, tile_map))
+      dialog_box.update(dt)
 
       if Keys.pressed?(Keys::Escape)
         transition_out.start
@@ -88,6 +96,8 @@ module JR
       tile_map.draw(draw, camera_x.to_i, camera_y.to_i)
       npcs.each(&.draw(draw, camera_x.to_f32, camera_y.to_f32))
       player.draw(draw, camera_x.to_f32, camera_y.to_f32)
+
+      dialog_box.draw(draw)
     end
   end
 end
