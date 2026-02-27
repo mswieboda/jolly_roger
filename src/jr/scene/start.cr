@@ -38,8 +38,25 @@ module JR
 
       @npcs = [] of NPC
 
+      colors = [
+        GSDL::Color::Red,
+        GSDL::Color::Blue,
+        GSDL::Color::Green,
+        GSDL::Color::Yellow,
+        GSDL::Color::Purple,
+        GSDL::Color::Cyan,
+        GSDL::Color::Orange,
+        GSDL::Color::Magenta,
+      ]
+
       13.times do
-        @npcs << NPC.new
+        tint = colors.sample
+        tint.a = 128
+
+        npc = NPC.new
+        npc.tint = tint
+
+        @npcs << npc
       end
 
       # random spots on map
