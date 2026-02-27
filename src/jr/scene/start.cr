@@ -2,6 +2,7 @@ module JR
   class Scene::Start < GSDL::Scene
     getter tile_map : GSDL::TileMap
     getter player : Player
+    getter npcs : Array(NPC)
     getter camera_x : Num = 0
     getter camera_y : Num = 0
 
@@ -33,10 +34,28 @@ module JR
 
       @tile_map = GSDL::TileMapManager.get("map")
       @player = Player.new
+      @player.center(width: Game.width, height: Game.height)
+
+      @npcs = [] of NPC
+
+      13.times do
+        @npcs << NPC.new
+      end
+
+      # random spots on map
+      padding = 16
+      map_width = @tile_map.map_width_tiles * @tile_map.tile_width
+      map_height = @tile_map.map_height_tiles * @tile_map.tile_height
+
+      @npcs.each do |npc|
+        npc.x = rand((npc.width + padding)..(map_width - padding))
+        npc.y = rand((npc.height + padding)..(map_height - padding))
+      end
     end
 
     def update(dt : Float32)
       player.update(dt, tile_map)
+      npcs.each(&.update(dt, tile_map))
 
       if Keys.pressed?(Keys::Escape)
         transition_out.start
@@ -50,6 +69,7 @@ module JR
     def draw(draw : GSDL::Draw)
       # TODO: fix these camera params in GSDL to be both Num
       tile_map.draw(draw, camera_x.to_i, camera_y.to_i)
+      npcs.each(&.draw(draw, camera_x.to_f32, camera_y.to_f32))
       player.draw(draw, camera_x.to_f32, camera_y.to_f32)
     end
   end
