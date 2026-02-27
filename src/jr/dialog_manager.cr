@@ -18,12 +18,32 @@ module JR
   end
 
   class DialogManager
-    getter dialogs : Hash(String, DialogNode) = {} of String => DialogNode
+    @@instance : DialogManager? = nil
 
-    def load(path : String)
-      File.open(path) do |file|
-        @dialogs = Hash(String, DialogNode).from_yaml(file)
-      end
+    @dialogs : Hash(String, DialogNode) = {} of String => DialogNode
+
+    def self.instance : DialogManager
+      @@instance ||= new
+    end
+
+    def self.load(path_key : String)
+      instance.load(path_key)
+    end
+
+    def self.get_node(id : String) : DialogNode?
+      instance.get_node(id)
+    end
+
+    def load(path_key : String)
+      {% if flag?(:release) %}
+        data = GSDL::AssetManager.load_raw_data(path_key)
+        @dialogs = Hash(String, DialogNode).from_yaml(String.new(data))
+      {% else %}
+        full_path = GSDL::AssetManager.asset_path + path_key
+        File.open(full_path) do |file|
+          @dialogs = Hash(String, DialogNode).from_yaml(file)
+        end
+      {% end %}
     end
 
     def get_node(id : String) : DialogNode?

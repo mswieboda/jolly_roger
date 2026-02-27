@@ -23,6 +23,7 @@ module JR
 
     def load_tile_maps
       GSDL::TileMapManager.load("map", "gfx/map.json")
+      DialogManager.load("data/dialog.yml")
     end
   end
 end
