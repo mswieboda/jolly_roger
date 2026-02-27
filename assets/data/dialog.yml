@@ -1,0 +1,18 @@
+blacksmith_intro:
+  text: "Well met, traveler. Need a new blade?"
+  choices:
+    - text: "Yes, show me your wares."
+      next_id: blacksmith_shop
+      actions: ["open_shop:blacksmith"]
+    - text: "Have you seen any goblins?"
+      next_id: blacksmith_goblins
+      conditions: ["quest_active:goblin_hunt"]
+    - text: "No, just passing through."
+      next_id: exit
+
+blacksmith_goblins:
+  text: "Aye, they stole my hammer! If you find it, I'll reward you."
+  choices:
+    - text: "I'll keep an eye out."
+      next_id: exit
+      actions: ["start_quest:find_hammer"]
