@@ -3,7 +3,7 @@ require "./scene_manager"
 module JR
   class Game < GSDL::Game
     def initialize
-      super(title: "JR", width: 800, height: 600)
+      super(title: "JR", width: 800, height: 640)
     end
 
     def init

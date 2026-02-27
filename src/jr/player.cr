@@ -10,7 +10,7 @@ module JR
     property? debug = false
 
     def initialize
-      super(key: "player", width: 24, height: 40, scale: {2_f32, 2_f32})
+      super(key: "player", width: 24, height: 40)
 
       # used in TileMapCollidable
       @use_gravity = false
