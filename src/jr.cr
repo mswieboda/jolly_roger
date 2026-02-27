@@ -3,6 +3,7 @@ require "game_sdl"
 require "./jr/character"
 require "./jr/player"
 require "./jr/npc"
+require "./jr/action_parser"
 require "./jr/dialog_manager"
 require "./jr/game"
 
