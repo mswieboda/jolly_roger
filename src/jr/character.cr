@@ -73,15 +73,17 @@ module JR
         pause unless playing?("idle")
       end
 
-      @flip_left = dx != 0 && dx < 0
+      if dx != 0
+        @flip_left = dx < 0
+      end
 
       if idle_timer.done?
-        animate("idle")
+        animate("idle", force: true)
       end
     end
 
-    def animate(animation : String)
-      play(animation) if paused? || !playing?(animation)
+    def animate(animation : String, force = false)
+      play(animation) if paused? || !playing?(animation) || force
       idle_timer.restart
     end
 
