@@ -8,12 +8,13 @@ module JR
       getter selected_choice : Int32 = 0
 
       # UI Elements
-      @main_box : GSDL::Message
+      @main_box : GSDL::MessageTyped
       @choices_boxes : Array(GSDL::Message) = [] of GSDL::Message
       @valid_choices : Array(DialogChoice) = [] of DialogChoice
+      @show_choices : Bool = false
 
       def initialize
-        @main_box = GSDL::Message.new(
+        @main_box = GSDL::MessageTyped.new(
           text: "",
           x: 400_f32,
           y: 400_f32,
@@ -21,7 +22,9 @@ module JR
           width: 700,
           height: 100,
           color: GSDL::Color::Black,
-          border_radius: 8.0_f32
+          border_radius: 8.0_f32,
+          type: GSDL::TextTyped::Type::Word,
+          on_complete: -> { @show_choices = true }
         )
       end
 
@@ -50,7 +53,8 @@ module JR
 
         @current_node = node
         @selected_choice = 0
-        @main_box.text = node.text
+        @show_choices = false
+        @main_box.typed_text.full_text = node.text
         
         # Build choice boxes
         @choices_boxes.clear
@@ -105,6 +109,17 @@ module JR
       def update(dt : Float32)
         return unless @is_active
 
+        @main_box.update(dt)
+
+        # Allow skipping typing text
+        if !@show_choices && Input.action?(:menu_select)
+          @main_box.complete
+          @show_choices = true
+          return # Consume input
+        end
+
+        return unless @show_choices
+
         # Handle input
         if Input.action?(:menu_up)
           @selected_choice -= 1
@@ -132,7 +147,10 @@ module JR
         return unless @is_active
 
         @main_box.draw(draw)
-        @choices_boxes.each &.draw(draw)
+
+        if @show_choices
+          @choices_boxes.each &.draw(draw)
+        end
       end
     end
   end

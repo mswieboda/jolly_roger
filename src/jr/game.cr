@@ -7,23 +7,26 @@ module JR
     end
 
     def init
-      super
-
       @scene_manager = SceneManager.new
     end
 
     def load_fonts
-      GSDL::FontManager.load_default("fonts/PressStart2P.ttf")
+      [
+        {"default", "fonts/PressStart2P.ttf", 16_f32},
+      ]
     end
 
     def load_textures
-      GSDL::TextureManager.load("tiles", "gfx/tiles.png")
-      GSDL::TextureManager.load("player", "gfx/player.png")
+      [
+        {"tiles", "gfx/tiles.png"},
+        {"player", "gfx/player.png"},
+      ]
     end
 
     def load_tile_maps
-      GSDL::TileMapManager.load("map", "gfx/map.json")
-      DialogManager.load("data/dialog.yml")
+      [
+        {"map", "gfx/map.json"},
+      ]
     end
   end
 end
