@@ -5,4 +5,7 @@
 /.shards/
 *.dwarf
 
+# pi AI agent specfic project settings, context, skills, extensions
+.pi/
+
 .DS_Store
