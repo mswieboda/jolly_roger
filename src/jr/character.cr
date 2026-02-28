@@ -46,12 +46,58 @@ module JR
       GSDL::FRect.new(x: 6 * scale_x, y: 26 * scale_y, w: draw_width - 12 * scale_x, h: draw_height - 28 * scale_y)
     end
 
-    def update(dt : Float32, tile_map : GSDL::TileMap)
+    def update(dt : Float32, tile_map : GSDL::TileMap, npcs : Array(NPC))
       # physics and collision handling
-      move_and_collide(dt, tile_map)
+      move_and_collide(dt, tile_map, npcs)
 
       # calls AnimatedSprite#update for animation playback
       super(dt)
+    end
+
+    def move_and_collide(dt : Float32, tile_map : GSDL::TileMap, npcs : Array(NPC))
+      move_vertical_and_collide(dt, tile_map, npcs)
+      move_horizontal_and_collide(dt, tile_map, npcs)
+    end
+
+    def move_vertical_and_collide(dt : Float32, tile_map : GSDL::TileMap, npcs : Array(NPC))
+      vel_y = @velocity_y
+      # Do tilemap collision first
+      super(dt, tile_map)
+
+      # Now handle NPC collision
+      npcs.each do |npc|
+        next if npc == self
+        if collides?(npc)
+          if vel_y > 0
+            self.y = npc.collision_box.y - collision_bounding_box.y - collision_bounding_box.h + (draw_height * origin_y)
+            @velocity_y = 0
+            @grounded = true
+          elsif vel_y < 0
+            self.y = npc.collision_box.y + npc.collision_box.h - collision_bounding_box.y + (draw_height * origin_y)
+            @velocity_y = 0
+          end
+        end
+      end
+    end
+
+    def move_horizontal_and_collide(dt : Float32, tile_map : GSDL::TileMap, npcs : Array(NPC))
+      vel_x = @velocity_x
+      # Do tilemap collision first
+      super(dt, tile_map)
+
+      # Now handle NPC collision
+      npcs.each do |npc|
+        next if npc == self
+        if collides?(npc)
+          if vel_x > 0
+            self.x = npc.collision_box.x - collision_bounding_box.x - collision_bounding_box.w + (draw_width * origin_x)
+            @velocity_x = 0
+          elsif vel_x < 0
+            self.x = npc.collision_box.x + npc.collision_box.w - collision_bounding_box.x + (draw_width * origin_x)
+            @velocity_x = 0
+          end
+        end
+      end
     end
 
     def update_animations(dx : Int8, dy : Int8)

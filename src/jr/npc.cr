@@ -6,7 +6,7 @@ module JR
       super(key: "player", width: 24, height: 40)
     end
 
-    def update(dt : Float32, tile_map : GSDL::TileMap)
+    def update(dt : Float32, tile_map : GSDL::TileMap, npcs : Array(NPC))
       dx = 0_i8
       dy = 0_i8
 
@@ -15,7 +15,7 @@ module JR
 
       update_animations(dx, dy)
 
-      super(dt, tile_map)
+      super(dt, tile_map, npcs)
     end
   end
 end

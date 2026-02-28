@@ -89,8 +89,8 @@ module JR
       if dialog_box.is_active
         dialog_box.update(dt)
       else
-        player.update(dt, tile_map)
-        npcs.each(&.update(dt, tile_map))
+        player.update(dt, tile_map, npcs)
+        npcs.each(&.update(dt, tile_map, npcs))
       end
 
       # interaction logic

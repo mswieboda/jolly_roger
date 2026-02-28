@@ -4,7 +4,7 @@ module JR
       super(key: "player", width: 24, height: 40)
     end
 
-    def update(dt : Float32, tile_map : GSDL::TileMap)
+    def update(dt : Float32, tile_map : GSDL::TileMap, npcs : Array(NPC))
       @debug = !@debug if Input.action?(:debug)
 
       dx, dy = delta_input_movement
@@ -16,7 +16,7 @@ module JR
 
       update_animations(dx, dy)
 
-      super(dt, tile_map)
+      super(dt, tile_map, npcs)
     end
 
     def delta_input_movement : Tuple(Int8, Int8)
