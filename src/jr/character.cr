@@ -87,23 +87,22 @@ module JR
       idle_timer.restart
     end
 
-    def draw(draw : GSDL::Draw, camera_x : Float32 = 0_f32, camera_y : Float32 = 0_f32, flip_horizontal : Bool = false)
+    def draw(draw : GSDL::Draw, camera : GSDL::Camera? = nil, flip_horizontal : Bool = false)
       super(
         draw: draw,
-        camera_x: camera_x,
-        camera_y: camera_y,
+        camera: camera,
         flip_horizontal: flip_horizontal || flip_left?
       )
 
-      draw_debug(draw: draw, camera_x: camera_x, camera_y: camera_y) if debug?
+      draw_debug(draw: draw, camera: camera) if debug?
     end
 
-    def draw_debug(draw : GSDL::Draw, camera_x : Float32, camera_y : Float32)
+    def draw_debug(draw : GSDL::Draw, camera : GSDL::Camera? = nil)
       rect = self.collision_box
       draw.rect_outline(
         rect: GSDL::FRect.new(
-          x: rect.x - camera_x,
-          y: rect.y - camera_y,
+          x: rect.x - camera.try(&.x) || 0,
+          y: rect.y - camera.try(&.y) || 0,
           w: rect.w,
           h: rect.h
         ),

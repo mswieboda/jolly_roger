@@ -37,6 +37,10 @@ module JR
       {% end %}
 
       @tile_map = GSDL::TileMapManager.get("map")
+
+      @camera = GSDL::Camera.new(width: Game.width, height: Game.height)
+      @camera.type = GSDL::Camera::Type::CenterOnTarget
+
       @player = Player.new
       @player.center(width: Game.width, height: Game.height)
 
@@ -111,15 +115,15 @@ module JR
       end
 
       # camera follows player
-      @camera_x = player.x - Game.width / 2_f32
-      @camera_y = player.y - Game.height / 2_f32
+      @camera.look_at(@player.x, @player.y)
+      @camera.update(dt)
     end
 
     def draw(draw : GSDL::Draw)
       # TODO: fix these camera params in GSDL to be both Num
-      tile_map.draw(draw, camera_x.to_i, camera_y.to_i)
-      npcs.each(&.draw(draw, camera_x.to_f32, camera_y.to_f32))
-      player.draw(draw, camera_x.to_f32, camera_y.to_f32)
+      tile_map.draw(draw, @camera)
+      npcs.each(&.draw(draw, @camera))
+      player.draw(draw, @camera)
 
       dialog_box.draw(draw)
     end
