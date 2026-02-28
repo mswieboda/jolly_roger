@@ -5,7 +5,7 @@ module JR
     getter npcs : Array(NPC)
     getter camera_x : Num = 0
     getter camera_y : Num = 0
-    getter dialog_box : UI::DialogBox
+    getter dialog_box : GSDL::DialogBox
 
     def initialize
       super(:start)
@@ -82,7 +82,7 @@ module JR
         npc.y = rand((npc.height + padding)..(map_height - padding))
       end
 
-      @dialog_box = UI::DialogBox.new
+      @dialog_box = GSDL::DialogBox.new
     end
 
     def update(dt : Float32)

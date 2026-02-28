@@ -7,7 +7,7 @@ module JR
     def initialize
       super
 
-      DialogManager.load("data/dialog.yml")
+      GSDL::DialogManager.load("data/dialog.yml")
       @scene = Scene::Start.new
     end
 
