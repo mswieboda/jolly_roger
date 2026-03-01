@@ -2,6 +2,7 @@ require "game_sdl"
 
 require "./jr/character"
 require "./jr/static_entity"
+require "./jr/warp"
 require "./jr/player"
 require "./jr/npc"
 require "./jr/action_parser"
