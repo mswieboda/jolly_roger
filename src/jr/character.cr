@@ -63,8 +63,9 @@ module JR
 
     def move_vertical_and_collide(dt : Float32, tile_map : GSDL::TileMap, npcs : Array(NPC))
       vel_y = @velocity_y
+
       # Do tilemap collision first
-      super(dt, tile_map)
+      move_vertical_and_collide(dt: dt, tile_map: tile_map)
 
       # Now handle NPC collision
       npcs.each do |npc|
@@ -84,8 +85,9 @@ module JR
 
     def move_horizontal_and_collide(dt : Float32, tile_map : GSDL::TileMap, npcs : Array(NPC))
       vel_x = @velocity_x
+
       # Do tilemap collision first
-      super(dt, tile_map)
+      move_horizontal_and_collide(dt: dt, tile_map: tile_map)
 
       # Now handle NPC collision
       npcs.each do |npc|
