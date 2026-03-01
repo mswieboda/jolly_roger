@@ -12,6 +12,8 @@ module JR
     def initialize(key : String, width : Int32, height : Int32)
       super(key: key, width: width, height: height)
 
+      @z_index = 3
+
       # used in TileMapCollidable
       @use_gravity = false
 
