@@ -22,3 +22,6 @@
 - Manage inputs and update logic in the `update(dt)` methods.
 - Delegate rendering to `draw(draw, camera_x, camera_y)` or `draw(draw)` methods.
 - Pass `GSDL::TileMap` references to entities for collision detection.
+
+## Do Not Do
+- Do not edit files inside the `./lib/` folder, if you need to make those changes, summarize them to me so i can make them in the appropriate library repos (`game_sdl` and `sdl3`) so that they can be released, and our GSDL game will update to the latest version

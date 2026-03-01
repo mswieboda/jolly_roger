@@ -1,6 +1,7 @@
 module JR
   abstract class Character < GSDL::AnimatedSprite
     include GSDL::TileMapCollidable
+    include GSDL::Directionable
 
     IdleTime = 5.seconds
     Speed = 96
@@ -108,17 +109,22 @@ module JR
       if dy < 0
         if dx != 0
           animate("walk-up-right")
+          @direction = dx > 0 ? GSDL::Direction::UpRight : GSDL::Direction::UpLeft
         else
           animate("walk-up")
+          @direction = GSDL::Direction::Up
         end
       elsif dy > 0
         if dx != 0
           animate("walk-down-right")
+          @direction = dx > 0 ? GSDL::Direction::DownRight : GSDL::Direction::DownLeft
         else
           animate("walk-down")
+          @direction = GSDL::Direction::Down
         end
       elsif dx != 0
         animate("walk-right")
+        @direction = dx > 0 ? GSDL::Direction::Right : GSDL::Direction::Left
       else
         pause unless playing?("idle")
       end

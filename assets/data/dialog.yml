@@ -10,6 +10,12 @@ blacksmith_intro:
     - text: "No, just passing through."
       next_id: exit
 
+sign_post:
+  text: "Beware of Goblins! The road ahead is dangerous for the unprepared."
+  choices:
+    - text: "Continue"
+      next_id: exit
+
 blacksmith_goblins:
   text: "Aye, they stole my hammer! If you find it, I'll reward you."
   choices:
