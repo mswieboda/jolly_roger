@@ -8,13 +8,19 @@ module JR
       @debug = !@debug if Input.action?(:debug)
 
       dx, dy = delta_input_movement
+      running = Input.action?(:run)
 
-      # TODO: make sure when both directions,
-      # use the square root thing for even distance
-      @velocity_x = dx.to_i * Speed
-      @velocity_y = dy.to_i * Speed
+      current_speed = Speed.to_f
+      current_speed *= 2.0 if running
 
-      update_animations(dx, dy)
+      if dx != 0 && dy != 0
+        current_speed /= Math.sqrt(2)
+      end
+
+      @velocity_x = dx.to_f32 * current_speed
+      @velocity_y = dy.to_f32 * current_speed
+
+      update_animations(dx, dy, running)
 
       super(dt, tile_map, npcs)
     end

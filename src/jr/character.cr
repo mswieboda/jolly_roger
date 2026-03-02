@@ -35,12 +35,22 @@ module JR
       add("down-left", [5], fps: fps, loops: false)
       add("left", [6], fps: fps, loops: false)
       add("up-left", [7], fps: fps, loops: false)
+
       add("idle", [4, 8, 9, 10, 11, 4], fps: fps, loops: false)
+
       add("walk-up", [0, *(12..17)], fps: fps_walk, loops: true)
       add("walk-up-right", [1, *(18..23)], fps: fps_walk, loops: true)
       add("walk-right", [2, *(24..29)], fps: fps_walk, loops: true)
       add("walk-down-right", [3, *(30..35)], fps: fps_walk, loops: true)
       add("walk-down", [4, *(36..41)], fps: fps_walk, loops: true)
+
+      # TODO: add custom run animations instead of using walk ones
+      add("run-up", [0, *(12..17)], fps: fps_walk, loops: true)
+      add("run-up-right", [1, *(18..23)], fps: fps_walk, loops: true)
+      add("run-right", [2, *(24..29)], fps: fps_walk, loops: true)
+      add("run-down-right", [3, *(30..35)], fps: fps_walk, loops: true)
+      add("run-down", [4, *(36..41)], fps: fps_walk, loops: true)
+
       play("down")
     end
 
@@ -105,25 +115,31 @@ module JR
       end
     end
 
-    def update_animations(dx : Int8, dy : Int8)
+    def update_animations(dx : Int8, dy : Int8, running : Bool = false)
+      prefix = "idle"
+
+      if dx != 0 || dy != 0
+        prefix = running ? "run" : "walk"
+      end
+
       if dy < 0
         if dx != 0
-          animate("walk-up-right")
+          animate("#{prefix}-up-right")
           @direction = dx > 0 ? GSDL::Direction::UpRight : GSDL::Direction::UpLeft
         else
-          animate("walk-up")
+          animate("#{prefix}-up")
           @direction = GSDL::Direction::Up
         end
       elsif dy > 0
         if dx != 0
-          animate("walk-down-right")
+          animate("#{prefix}-down-right")
           @direction = dx > 0 ? GSDL::Direction::DownRight : GSDL::Direction::DownLeft
         else
-          animate("walk-down")
+          animate("#{prefix}-down")
           @direction = GSDL::Direction::Down
         end
       elsif dx != 0
-        animate("walk-right")
+        animate("#{prefix}-right")
         @direction = dx > 0 ? GSDL::Direction::Right : GSDL::Direction::Left
       else
         pause unless playing?("idle")

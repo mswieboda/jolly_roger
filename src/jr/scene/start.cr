@@ -29,6 +29,7 @@ module JR
       Input.set(:left) { Keys.pressed?([Keys::A, Keys::Left]) }
       Input.set(:down) { Keys.pressed?([Keys::S, Keys::Down]) }
       Input.set(:right) { Keys.pressed?([Keys::D, Keys::Right]) }
+      Input.set(:run) { Keys.pressed?([Keys::LShift, Keys::RShift]) }
       Input.set(:action) { Keys.just_pressed?([Keys::Return, Keys::Space, Keys::E]) }
       Input.set(:menu) { Keys.just_pressed?([Keys::Escape]) }
       Input.set(:menu_up) { Keys.just_pressed?([Keys::W, Keys::Up]) }
