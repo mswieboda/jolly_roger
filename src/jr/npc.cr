@@ -6,16 +6,14 @@ module JR
       super(key: "player", width: 24, height: 40)
     end
 
-    def update(dt : Float32, tile_map : GSDL::TileMap, npcs : Array(NPC))
-      dx = 0_i8
-      dy = 0_i8
+    def running? : Bool
+      false
+    end
 
-      @velocity_x = 0
-      @velocity_y = 0
-
-      update_animations(dx, dy)
-
-      super(dt, tile_map, npcs)
+    def move_input
+      # NPC doesn't move by user input
+      self.dx = 0
+      self.dy = 0
     end
   end
 end

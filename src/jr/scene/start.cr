@@ -29,6 +29,10 @@ module JR
       Input.set(:left) { Keys.pressed?([Keys::A, Keys::Left]) }
       Input.set(:down) { Keys.pressed?([Keys::S, Keys::Down]) }
       Input.set(:right) { Keys.pressed?([Keys::D, Keys::Right]) }
+      Input.set(:move_up) { Keys.pressed?([Keys::W, Keys::Up]) }
+      Input.set(:move_left) { Keys.pressed?([Keys::A, Keys::Left]) }
+      Input.set(:move_down) { Keys.pressed?([Keys::S, Keys::Down]) }
+      Input.set(:move_right) { Keys.pressed?([Keys::D, Keys::Right]) }
       Input.set(:run) { Keys.pressed?([Keys::LShift, Keys::RShift]) }
       Input.set(:action) { Keys.just_pressed?([Keys::Return, Keys::Space, Keys::E]) }
       Input.set(:menu) { Keys.just_pressed?([Keys::Escape]) }
@@ -104,9 +108,13 @@ module JR
       if dialog_box.is_active
         dialog_box.update(dt)
       else
-        player.update(dt, tile_map, npcs)
-        npcs.each(&.update(dt, tile_map, npcs))
-        static_entities.each(&.update(dt, tile_map, npcs))
+        all_collidables = [player.as(GSDL::Collidable)] + 
+                         npcs.map(&.as(GSDL::Collidable)) + 
+                         static_entities.map(&.as(GSDL::Collidable))
+
+        player.update(dt, tile_map, all_collidables)
+        npcs.each(&.update(dt, tile_map, all_collidables))
+        static_entities.each(&.update(dt))
       end
 
       if Input.action?(:menu)

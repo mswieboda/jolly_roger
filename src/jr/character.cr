@@ -1,7 +1,7 @@
 module JR
   abstract class Character < GSDL::AnimatedSprite
+    include GSDL::TopDownController
     include GSDL::TileMapCollidable
-    include GSDL::Directionable
 
     IdleTime = 5.seconds
     Speed = 96
@@ -59,94 +59,64 @@ module JR
       GSDL::FRect.new(x: 6 * scale_x, y: 26 * scale_y, w: draw_width - 12 * scale_x, h: draw_height - 28 * scale_y)
     end
 
-    def update(dt : Float32, tile_map : GSDL::TileMap, npcs : Array(NPC))
-      # physics and collision handling
-      move_and_collide(dt, tile_map, npcs)
+    abstract def running? : Bool
+
+    def move_speed : Num
+      running? ? Speed * 2.0_f32 : Speed.to_f32
+    end
+
+    def grid_size : Num
+      32
+    end
+
+    def update(dt : Float32, tile_map : GSDL::TileMap, collidables : Array(GSDL::Collidable))
+      top_down_update(
+        dt: dt,
+        collidables: collidables.reject { |n| n == self },
+        tile_map: tile_map
+      )
+
+      update_animations(running?)
 
       # calls AnimatedSprite#update for animation playback
       super(dt)
     end
 
-    def move_and_collide(dt : Float32, tile_map : GSDL::TileMap, npcs : Array(NPC))
-      move_vertical_and_collide(dt, tile_map, npcs)
-      move_horizontal_and_collide(dt, tile_map, npcs)
-    end
-
-    def move_vertical_and_collide(dt : Float32, tile_map : GSDL::TileMap, npcs : Array(NPC))
-      vel_y = @velocity_y
-
-      # Do tilemap collision first
-      move_vertical_and_collide(dt: dt, tile_map: tile_map)
-
-      # Now handle NPC collision
-      npcs.each do |npc|
-        next if npc == self
-        if collides?(npc)
-          if vel_y > 0
-            self.y = npc.collision_box.y - collision_bounding_box.y - collision_bounding_box.h + (draw_height * origin_y)
-            @velocity_y = 0
-            @grounded = true
-          elsif vel_y < 0
-            self.y = npc.collision_box.y + npc.collision_box.h - collision_bounding_box.y + (draw_height * origin_y)
-            @velocity_y = 0
-          end
-        end
-      end
-    end
-
-    def move_horizontal_and_collide(dt : Float32, tile_map : GSDL::TileMap, npcs : Array(NPC))
-      vel_x = @velocity_x
-
-      # Do tilemap collision first
-      move_horizontal_and_collide(dt: dt, tile_map: tile_map)
-
-      # Now handle NPC collision
-      npcs.each do |npc|
-        next if npc == self
-        if collides?(npc)
-          if vel_x > 0
-            self.x = npc.collision_box.x - collision_bounding_box.x - collision_bounding_box.w + (draw_width * origin_x)
-            @velocity_x = 0
-          elsif vel_x < 0
-            self.x = npc.collision_box.x + npc.collision_box.w - collision_bounding_box.x + (draw_width * origin_x)
-            @velocity_x = 0
-          end
-        end
-      end
-    end
-
-    def update_animations(dx : Int8, dy : Int8, running : Bool = false)
+    def update_animations(running : Bool = false)
       prefix = "idle"
 
-      if dx != 0 || dy != 0
+      if moving?
         prefix = running ? "run" : "walk"
-      end
 
-      if dy < 0
-        if dx != 0
-          animate("#{prefix}-up-right")
-          @direction = dx > 0 ? GSDL::Direction::UpRight : GSDL::Direction::UpLeft
-        else
+        case direction
+        when .up?
           animate("#{prefix}-up")
-          @direction = GSDL::Direction::Up
-        end
-      elsif dy > 0
-        if dx != 0
+        when .up_right?
+          animate("#{prefix}-up-right")
+        when .right?
+          animate("#{prefix}-right")
+        when .down_right?
           animate("#{prefix}-down-right")
-          @direction = dx > 0 ? GSDL::Direction::DownRight : GSDL::Direction::DownLeft
-        else
+        when .down?
           animate("#{prefix}-down")
-          @direction = GSDL::Direction::Down
+        when .down_left?
+          # we don't have down-left animation specifically, using down-right with flip
+          animate("#{prefix}-down-right")
+        when .left?
+          animate("#{prefix}-right")
+        when .up_left?
+          animate("#{prefix}-up-right")
         end
-      elsif dx != 0
-        animate("#{prefix}-right")
-        @direction = dx > 0 ? GSDL::Direction::Right : GSDL::Direction::Left
       else
         pause unless playing?("idle")
       end
 
       if dx != 0
         @flip_left = dx < 0
+      elsif direction.left? || direction.up_left? || direction.down_left?
+        @flip_left = true
+      elsif direction.right? || direction.up_right? || direction.down_right?
+        @flip_left = false
       end
 
       if idle_timer.done?
