@@ -129,6 +129,17 @@ module JR
       idle_timer.restart
     end
 
+    def face_target(tx : Num, ty : Num)
+      dx = tx - x
+      dy = ty - y
+
+      if dx.abs > dy.abs
+        self.direction = dx > 0 ? GSDL::Direction::Right : GSDL::Direction::Left
+      else
+        self.direction = dy > 0 ? GSDL::Direction::Down : GSDL::Direction::Up
+      end
+    end
+
     def draw(draw : GSDL::Draw, camera : GSDL::Camera? = nil, flip_horizontal : Bool = false)
       super(
         draw: draw,

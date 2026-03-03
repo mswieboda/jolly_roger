@@ -92,8 +92,9 @@ module JR
       map_height = @tile_map.map_height_tiles * @tile_map.tile_height
 
       @npcs.each do |npc|
-        npc.x = rand((npc.width + padding)..(map_width - padding))
-        npc.y = rand((npc.height + padding)..(map_height - padding))
+        x = rand((npc.width + padding)..(map_width - padding))
+        y = rand((npc.height + padding)..(map_height - padding))
+        npc.spawn_at(x, y)
       end
 
       @dialog_box = GSDL::DialogBox.new
@@ -121,18 +122,23 @@ module JR
       super(dt)
       update_dialogs(dt)
 
+      all_collidables = [player.as(GSDL::Collidable)] +
+                       npcs.map(&.as(GSDL::Collidable)) +
+                       static_entities.map(&.as(GSDL::Collidable))
+
       if dialog_box.is_active
         dialog_box.update(dt)
       else
-        all_collidables = [player.as(GSDL::Collidable)] + 
-                         npcs.map(&.as(GSDL::Collidable)) + 
-                         static_entities.map(&.as(GSDL::Collidable))
-
         player.update(dt, tile_map, all_collidables)
-        npcs.each(&.update(dt, tile_map, all_collidables))
         static_entities.each(&.update(dt))
         warps.each(&.update(dt))
+
+        # Reset interacting state when dialog is NOT active
+        npcs.each { |npc| npc.interacting = false }
       end
+
+      # NPCs always update so others can wander during dialog
+      npcs.each(&.update(dt, tile_map, all_collidables))
 
       # camera follows player
       @camera.look_at(@player.x, @player.y)
@@ -151,6 +157,8 @@ module JR
 
             # ~48 pixels radius for interaction
             if dist_sq < 48 * 48
+              npc.interacting = true
+              npc.face_target(player.x, player.y)
               dialog_box.start(npc.dialog_key.not_nil!)
               return
             end
