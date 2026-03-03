@@ -12,5 +12,8 @@
 .gemini/
 /GEMINI.md
 
+# AI info, but doesn't need to be committed (too annoying when refining tickets)
+/GAME_CONTEXT.md
+
 # macOS specific ignores
 .DS_Store
