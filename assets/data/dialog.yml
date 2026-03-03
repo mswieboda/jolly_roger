@@ -22,3 +22,9 @@ blacksmith_goblins:
     - text: "I'll keep an eye out."
       next_id: exit
       actions: ["start_quest:find_hammer"]
+
+blacksmith_shop:
+  text: "My forge is always hot! Take a look at these beauties."
+  choices:
+    - text: "Nevermind."
+      next_id: blacksmith_intro

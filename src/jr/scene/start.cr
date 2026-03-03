@@ -98,6 +98,8 @@ module JR
       end
 
       @dialog_box = GSDL::DialogBox.new
+      @dialog_box.on_action { |action| ActionParser.execute(action) }
+      @dialog_box.on_condition { |cond| ActionParser.check_condition(cond) }
 
       # Initialize warps
       warp = Warp.new(

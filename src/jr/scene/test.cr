@@ -27,6 +27,8 @@ module JR
       @player.center(width: Game.width, height: Game.height)
 
       @dialog_box = GSDL::DialogBox.new
+      @dialog_box.on_action { |action| ActionParser.execute(action) }
+      @dialog_box.on_condition { |cond| ActionParser.check_condition(cond) }
 
       # Initialize warp back to start
       warp = Warp.new(
