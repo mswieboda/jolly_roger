@@ -12,6 +12,7 @@ module JR
   alias Color = GSDL::Color
   alias Input = GSDL::Input
   alias Keys = GSDL::Keys
+  alias Mouse = GSDL::Mouse
   alias Num = GSDL::Num
 
   Game.new.run

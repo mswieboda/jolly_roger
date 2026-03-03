@@ -4,12 +4,13 @@ module JR
     getter player : Player
     getter npcs : Array(NPC)
     getter static_entities : Array(StaticEntity)
-    getter camera_x : Num = 0
-    getter camera_y : Num = 0
+    getter camera : GSDL::Camera
     getter dialog_box : GSDL::DialogBox
 
     def initialize
       super(:start)
+
+      Mouse.hide
 
       {% if flag?(:release) %}
         transition_in = GSDL::FadeTransition.new(

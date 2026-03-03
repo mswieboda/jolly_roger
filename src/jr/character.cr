@@ -143,8 +143,8 @@ module JR
       rect = self.collision_box
       draw.rect_outline(
         rect: GSDL::FRect.new(
-          x: rect.x - camera.try(&.x) || 0,
-          y: rect.y - camera.try(&.y) || 0,
+          x: rect.x - (camera.try(&.x) || 0),
+          y: rect.y - (camera.try(&.y) || 0),
           w: rect.w,
           h: rect.h
         ),
