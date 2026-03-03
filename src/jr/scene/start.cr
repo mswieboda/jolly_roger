@@ -1,5 +1,5 @@
 module JR
-  class Scene::Start < GSDL::Scene
+  class Scene::Start < JR::Scene
     getter tile_map : GSDL::TileMap
     getter player : Player
     getter npcs : Array(NPC)
@@ -12,19 +12,15 @@ module JR
 
       Mouse.hide
 
-      {% if flag?(:release) %}
-        transition_in = GSDL::FadeTransition.new(
-          direction: GSDL::TransitionDirection::In,
-          duration: 0.75_f32,
-          started: true
-        )
-        transition_out = GSDL::FadeTransition.new(
-          direction: GSDL::TransitionDirection::Out,
-          duration: 0.5_f32
-        )
-
-        super(:start, transition_in: transition_in, transition_out: transition_out)
-      {% end %}
+      @transition_in = GSDL::FadeTransition.new(
+        direction: GSDL::TransitionDirection::In,
+        duration: 0.75_f32,
+        started: true
+      )
+      @transition_out = GSDL::FadeTransition.new(
+        direction: GSDL::TransitionDirection::Out,
+        duration: 0.5_f32
+      )
 
       Input.set(:up) { Keys.pressed?([Keys::W, Keys::Up]) }
       Input.set(:left) { Keys.pressed?([Keys::A, Keys::Left]) }
@@ -101,9 +97,28 @@ module JR
       end
 
       @dialog_box = GSDL::DialogBox.new
+
+      # Initialize warps
+      warp = Warp.new(
+        name: "start_to_test",
+        key: "player", # Using player texture as a placeholder
+        width: 32,
+        height: 32,
+        target_scene: "test",
+        target_spawn_point: "test_to_start"
+      )
+      warp.x = 100
+      warp.y = 100
+      warp.tint = Color::Cyan
+      @warps << warp
+    end
+
+    def get_player : Player?
+      @player
     end
 
     def update(dt : Float32)
+      super(dt)
       update_dialogs(dt)
 
       if dialog_box.is_active
@@ -116,6 +131,7 @@ module JR
         player.update(dt, tile_map, all_collidables)
         npcs.each(&.update(dt, tile_map, all_collidables))
         static_entities.each(&.update(dt))
+        warps.each(&.update(dt))
       end
 
       if Input.action?(:menu)
@@ -164,6 +180,7 @@ module JR
     def draw(draw : GSDL::Draw)
       # TODO: fix these camera params in GSDL to be both Num
       tile_map.draw(draw, @camera)
+      warps.each(&.draw(draw, @camera))
       static_entities.each(&.draw(draw, @camera))
       npcs.each(&.draw(draw, @camera))
       player.draw(draw, @camera)

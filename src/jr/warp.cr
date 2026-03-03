@@ -1,10 +1,11 @@
 module JR
   class Warp < GSDL::AnimatedSprite
+    property name : String
     property dialog_key : String?
     property target_scene : String
     property target_spawn_point : String
 
-    def initialize(key : String, width : Int32, height : Int32, @target_scene : String, @target_spawn_point : String, @dialog_key : String? = nil)
+    def initialize(@name : String, key : String, width : Int32, height : Int32, @target_scene : String, @target_spawn_point : String, @dialog_key : String? = nil)
       super(key: key, width: width, height: height)
       @z_index = 0 # Adjust as needed
     end
