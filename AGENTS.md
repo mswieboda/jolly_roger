@@ -30,7 +30,11 @@
 - Delegate rendering to `draw(draw, @camera)` or `draw(draw)` methods.
 - Pass `GSDL::TileMap` references to entities for collision detection.
 
+## Trello Card Refinement
+- When refining Trello cards using the `trello-refine-card` skill, always reference [GAME_CONTEXT.md](GAME_CONTEXT.md) for project-specific technical patterns, system interdependencies, and card IDs.
+- Follow the established "Goal", "Context", "Technical Details", and "Definition of Done" structure for all refinements.
+
 ## Do Not Do
 - **Library Files:** NEVER edit files in `./lib/`. Summarize proposed changes for the user to apply to the source repositories (e.g., `sdl3`).
 - **Git Operations:** NO write commands (`git add`, `git commit`, `git stage`). Use read-only commands only.
-- **Trello:** DO NOT modify the Trello board or cards.
+- **Trello:** ONLY modify Trello cards when specifically asked to refine them using the `trello-refine-card` skill. Refer to [GAME_CONTEXT.md](GAME_CONTEXT.md) for established refinement patterns and card IDs.
