@@ -9,6 +9,7 @@ module JR
       super
 
       GSDL::DialogManager.load("data/dialog.yml")
+      self.pause_scene = JR::PauseScene.new
       @scene = Scene::Start.new
     end
 

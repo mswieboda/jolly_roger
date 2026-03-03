@@ -6,6 +6,7 @@ require "./jr/warp"
 require "./jr/player"
 require "./jr/npc"
 require "./jr/action_parser"
+require "./jr/ui/*"
 require "./jr/game"
 
 module JR

@@ -134,10 +134,6 @@ module JR
         warps.each(&.update(dt))
       end
 
-      if Input.action?(:menu)
-        transition_out.start
-      end
-
       # camera follows player
       @camera.look_at(@player.x, @player.y)
       @camera.update(dt)

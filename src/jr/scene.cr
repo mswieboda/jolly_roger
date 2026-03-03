@@ -11,6 +11,12 @@ module JR
 
     def update(dt : Float32)
       super(dt)
+
+      if GSDL::Input.action?(:menu)
+        GSDL::Game.instance.paused = true
+        return
+      end
+
       check_warps
     end
 
