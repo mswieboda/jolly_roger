@@ -13,15 +13,24 @@
   - `Player` (< `Character`): Driven by user input (`delta_input_movement`).
   - `NPC` (< `Character`): Driven by AI/scripted logic (currently placeholder). Distinguishable via `tint` parameter.
 
-## Commands
-- **Compile / Check Errors:** `make build`
-- **Run Game:** `make run` (Use only when the user wants to visually check the output)
+## Coding / Convention Standards
+- Do not run `crystal format`
+- Trim all whitespace for any changes or new files
+
+## Compiling, and Testing
+  - Command: `make build` to compile
+- **Functional Testing:** Run a specific example to exercise changes. Capture logs and exit automatically:
+  - Command: `timeout 5s make run || true`
+- **Error Resolution:** The `Makefile` includes `--error-trace`. Focus on the first few lines of a compile error to identify the root cause.
+- **Validation Mandate:** Frequent compilation checks are mandatory. A task is not complete until behavioral correctness is verified through a successful build and run.
 
 ## Development Flow
 - Define new entities in `src/jr/`.
 - Manage inputs and update logic in the `update(dt)` methods.
-- Delegate rendering to `draw(draw, camera_x, camera_y)` or `draw(draw)` methods.
+- Delegate rendering to `draw(draw, @camera)` or `draw(draw)` methods.
 - Pass `GSDL::TileMap` references to entities for collision detection.
 
 ## Do Not Do
-- Do not edit files inside the `./lib/` folder, if you need to make those changes, summarize them to me so i can make them in the appropriate library repos (`game_sdl` and `sdl3`) so that they can be released, and our GSDL game will update to the latest version
+- **Library Files:** NEVER edit files in `./lib/`. Summarize proposed changes for the user to apply to the source repositories (e.g., `sdl3`).
+- **Git Operations:** NO write commands (`git add`, `git commit`, `git stage`). Use read-only commands only.
+- **Trello:** DO NOT modify the Trello board or cards.

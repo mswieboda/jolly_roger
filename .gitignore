@@ -8,4 +8,9 @@
 # pi AI agent specfic project settings, context, skills, extensions
 .pi/
 
+# Gemini CLI AI agent specfic project settings, context, skills, extensions
+.gemini/
+/GEMINI.md
+
+# macOS specific ignores
 .DS_Store
