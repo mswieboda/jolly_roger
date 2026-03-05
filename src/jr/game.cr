@@ -19,13 +19,13 @@ module JR
     def load_textures
       [
         {"tiles", "gfx/tiles/land-old.png"},
-        {"player", "gfx/player.png"},
+        {"player", "gfx/chars/player.png"},
       ]
     end
 
     def load_tile_maps
       [
-        {"map", "gfx/map.json"},
+        {"map", "gfx/maps/map.json"},
       ]
     end
   end
