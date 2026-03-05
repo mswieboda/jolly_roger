@@ -18,7 +18,7 @@ module JR
 
     def load_textures
       [
-        {"tiles", "gfx/tiles.png"},
+        {"tiles", "gfx/tiles/land-old.png"},
         {"player", "gfx/player.png"},
       ]
     end
