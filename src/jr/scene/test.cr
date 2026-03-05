@@ -18,7 +18,7 @@ module JR
         duration: 0.5_f32
       )
 
-      @tile_map = GSDL::TileMapManager.get("map")
+      @tile_map = GSDL::TileMapManager.get("land")
 
       @camera = GSDL::Camera.new(width: Game.width, height: Game.height)
       @camera.type = GSDL::Camera::Type::CenterOnTarget

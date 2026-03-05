@@ -30,7 +30,8 @@ module JR
 
     def load_tile_maps
       [
-        {"map", "data/maps/island.json"},
+        {"island", "data/maps/island.json"},
+        {"land", "data/maps/map.json"},
       ]
     end
   end

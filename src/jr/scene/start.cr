@@ -41,7 +41,7 @@ module JR
         Input.set(:debug) { Keys.just_pressed?(Keys::Tab) }
       {% end %}
 
-      @tile_map = GSDL::TileMapManager.get("map")
+      @tile_map = GSDL::TileMapManager.get("island")
 
       @camera = GSDL::Camera.new(width: Game.width, height: Game.height)
       @camera.type = GSDL::Camera::Type::CenterOnTarget
@@ -71,9 +71,9 @@ module JR
         Color::Magenta,
       ]
 
-      13.times do |i|
+      5.times do |i|
         tint = colors.sample
-        tint.a = 128
+        tint.a = 192
 
         npc = NPC.new
         npc.tint = tint
@@ -87,7 +87,7 @@ module JR
       end
 
       # random spots on map
-      padding = 16
+      padding = 256
       map_width = @tile_map.map_width_tiles * @tile_map.tile_width
       map_height = @tile_map.map_height_tiles * @tile_map.tile_height
 
