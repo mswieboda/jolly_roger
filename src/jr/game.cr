@@ -20,12 +20,17 @@ module JR
       [
         {"tiles", "gfx/tiles/land-old.png"},
         {"player", "gfx/chars/player.png"},
+        {"beach-grass", "gfx/tiles/beach-grass.png"},
+        {"grass-path", "gfx/tiles/grass-path.png"},
+        {"water", "gfx/tiles/water.png"},
+        {"palm-tree", "gfx/objs/palm-tree.png"},
+        {"barrel", "gfx/objs/barrel.png"},
       ]
     end
 
     def load_tile_maps
       [
-        {"map", "gfx/maps/map.json"},
+        {"map", "data/maps/island.json"},
       ]
     end
   end
