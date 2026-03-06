@@ -48,6 +48,7 @@ module JR
       @camera.zoom = 1.25_f32
 
       @player = Player.new
+      @player.origin = {0.5_f32, 0.5_f32}
       @player.center(width: Game.width, height: Game.height)
 
       @static_entities = [] of StaticEntity
@@ -105,18 +106,15 @@ module JR
       # Initialize warps
       warp = Warp.new(
         name: "start_to_test",
-        key: "barrel", # Using barrel texture as a placeholder
+        key: "barrel",
         width: 32,
         height: 32,
         target_scene: "test",
         target_spawn_point: "test_to_start"
       )
 
-      warp.z_index = 1
-      warp.scale = {2_f32, 2_f32}
-      warp.x = 320
-      warp.y = 304
-      warp.tint = Color::Black
+      warp.x = 352
+      warp.y = 336
 
       @warps << warp
     end

@@ -24,6 +24,7 @@ module JR
       @camera.type = GSDL::Camera::Type::CenterOnTarget
 
       @player = Player.new
+      @player.origin = {0.5_f32, 0.5_f32}
       @player.center(width: Game.width, height: Game.height)
 
       @dialog_box = GSDL::DialogBox.new
@@ -33,7 +34,7 @@ module JR
       # Initialize warp back to start
       warp = Warp.new(
         name: "test_to_start",
-        key: "player",
+        key: "barrel",
         width: 32,
         height: 32,
         target_scene: "start",
@@ -41,7 +42,6 @@ module JR
       )
       warp.x = 200
       warp.y = 200
-      warp.tint = Color::Yellow
       @warps << warp
     end
 
