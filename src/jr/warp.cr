@@ -16,10 +16,10 @@ module JR
     # Define a default collision bounding box. This can be overridden in subclasses.
     def collision_bounding_box : GSDL::FRect
       GSDL::FRect.new(
-        x: draw_width / 3_f32,
-        y: draw_height / 5_f32,
-        w: draw_width - draw_width / 1.5_f32,
-        h: draw_height - draw_height / 1.75_f32
+        x: draw_width / 2.5_f32,
+        y: draw_height / 2.5_f32,
+        w: draw_width - draw_width / 1.25_f32,
+        h: draw_height - draw_height / 1.25_f32
       )
     end
 
