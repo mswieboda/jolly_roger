@@ -188,7 +188,6 @@ module JR
     end
 
     def draw(draw : GSDL::Draw)
-      # TODO: fix these camera params in GSDL to be both Num
       tile_map.draw(draw, @camera)
       warps.each(&.draw(draw, @camera))
       static_entities.each(&.draw(draw, @camera))

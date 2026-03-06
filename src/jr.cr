@@ -1,5 +1,6 @@
 require "game_sdl"
 
+require "./jr/objs/*"
 require "./jr/character"
 require "./jr/static_entity"
 require "./jr/warp"
