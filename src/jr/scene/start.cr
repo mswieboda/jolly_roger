@@ -193,6 +193,22 @@ module JR
       npcs.each(&.draw(draw, @camera))
       player.draw(draw, @camera)
 
+      # TODO: for debug, for when testing wrap facing, etc
+      # show warp collision box
+      # old_scale_x = draw.current_scale_x
+      # old_scale_y = draw.current_scale_y
+      # draw.scale = camera.zoom
+      # @warps.each do |warp|
+      #   rect = GSDL::FRect.new(
+      #     x: warp.collision_box.x - @camera.x,
+      #     y: warp.collision_box.y - @camera.y,
+      #     w: warp.collision_box.w,
+      #     h: warp.collision_box.h,
+      #   )
+      #   draw.rect_outline(rect: rect, color: Color::Magenta, z_index: 99)
+      # end
+      # draw.scale = {old_scale_x, old_scale_y}
+
       dialog_box.draw(draw)
     end
   end
