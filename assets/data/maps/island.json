@@ -238,7 +238,7 @@
                 {
                  "name":"solid_tiles",
                  "type":"QVariantList",
-                 "value":[1]
+                 "value":[7]
                 }],
          "spacing":0,
          "tilecount":16,
