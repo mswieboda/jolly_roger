@@ -45,6 +45,7 @@ module JR
 
       @camera = GSDL::Camera.new(width: Game.width, height: Game.height)
       @camera.type = GSDL::Camera::Type::CenterOnTarget
+      @camera.zoom = 1.25_f32
 
       @player = Player.new
       @player.center(width: Game.width, height: Game.height)
