@@ -89,14 +89,16 @@
          "y":0
         }, 
         {
-         "id": 3,
+         "draworder":"topdown",
+         "id":3,
          "name":"Player",
-         "objects": [],
+         "objects":[],
+         "opacity":0,
          "type":"objectgroup",
          "visible":true,
          "x":0,
          "y":0
-        },
+        }, 
         {
          "draworder":"topdown",
          "id":4,
@@ -147,8 +149,8 @@
                  "type":"palm-tree",
                  "visible":true,
                  "width":48,
-                 "x":480,
-                 "y":480
+                 "x":490.742643624475,
+                 "y":518.299859878561
                 }, 
                 {
                  "gid":50,
@@ -238,7 +240,7 @@
         {
          "columns":4,
          "firstgid":1,
-         "image":"..\/tiles\/water.png",
+         "image":"..\/..\/gfx\/tiles\/water.png",
          "imageheight":128,
          "imagewidth":128,
          "margin":0,
@@ -257,7 +259,7 @@
         {
          "columns":4,
          "firstgid":17,
-         "image":"..\/tiles\/beach-grass.png",
+         "image":"..\/..\/gfx\/tiles\/beach-grass.png",
          "imageheight":128,
          "imagewidth":128,
          "margin":0,
@@ -276,7 +278,7 @@
         {
          "columns":4,
          "firstgid":33,
-         "image":"..\/tiles\/grass-path.png",
+         "image":"..\/..\/gfx\/tiles\/grass-path.png",
          "imageheight":128,
          "imagewidth":128,
          "margin":0,
@@ -295,7 +297,7 @@
         {
          "columns":1,
          "firstgid":49,
-         "image":"..\/objs\/palm-tree.png",
+         "image":"..\/..\/gfx\/objs\/palm-tree.png",
          "imageheight":48,
          "imagewidth":48,
          "margin":0,
@@ -314,7 +316,7 @@
         {
          "columns":1,
          "firstgid":50,
-         "image":"..\/objs\/barrel.png",
+         "image":"..\/..\/gfx\/objs\/barrel.png",
          "imageheight":32,
          "imagewidth":32,
          "margin":0,
