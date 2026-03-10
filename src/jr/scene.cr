@@ -33,7 +33,7 @@ module JR
             on_warp(warp)
           end
         else
-          # If we were not allowed to warp, we must wait until we are NOT 
+          # If we were not allowed to warp, we must wait until we are NOT
           # colliding with anything before we enable it.
           unless colliding_with_any
             @can_warp = true
@@ -59,6 +59,8 @@ module JR
         Scene::Start.new
       when "test"
         Scene::Test.new
+      when "overworld"
+        Scene::Overworld.new
       # Add other scenes here as they are created
       else
         nil

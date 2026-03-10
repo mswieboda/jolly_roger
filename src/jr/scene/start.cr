@@ -2,6 +2,7 @@ module JR
   class Scene::Start < JR::Scene
     getter tile_map : GSDL::TileMap
     getter player : Player
+    getter ship : Ship
     getter npcs : Array(NPC)
     getter static_entities : Array(StaticEntity)
     getter camera : GSDL::Camera
@@ -22,25 +23,6 @@ module JR
         duration: 0.5_f32
       )
 
-      Input.set(:up) { Keys.pressed?([Keys::W, Keys::Up]) }
-      Input.set(:left) { Keys.pressed?([Keys::A, Keys::Left]) }
-      Input.set(:down) { Keys.pressed?([Keys::S, Keys::Down]) }
-      Input.set(:right) { Keys.pressed?([Keys::D, Keys::Right]) }
-      Input.set(:move_up) { Keys.pressed?([Keys::W, Keys::Up]) }
-      Input.set(:move_left) { Keys.pressed?([Keys::A, Keys::Left]) }
-      Input.set(:move_down) { Keys.pressed?([Keys::S, Keys::Down]) }
-      Input.set(:move_right) { Keys.pressed?([Keys::D, Keys::Right]) }
-      Input.set(:run) { Keys.pressed?([Keys::LShift, Keys::RShift]) }
-      Input.set(:action) { Keys.just_pressed?([Keys::Return, Keys::Space, Keys::E]) }
-      Input.set(:menu) { Keys.just_pressed?([Keys::Escape]) }
-      Input.set(:menu_up) { Keys.just_pressed?([Keys::W, Keys::Up]) }
-      Input.set(:menu_down) { Keys.just_pressed?([Keys::S, Keys::Down]) }
-      Input.set(:menu_select) { Keys.just_pressed?([Keys::Return, Keys::Space, Keys::E]) }
-
-      {% unless flag?(:release) %}
-        Input.set(:debug) { Keys.just_pressed?(Keys::Tab) }
-      {% end %}
-
       @tile_map = GSDL::TileMapManager.get("island")
 
       @camera = GSDL::Camera.new(width: Game.width, height: Game.height)
@@ -50,6 +32,12 @@ module JR
       @player = Player.new
       @player.origin = {0.5_f32, 0.5_f32}
       @player.center(width: Game.width, height: Game.height)
+
+      @ship = Ship.new
+      # Place ship in the water near the island (x, y coordinates might need adjustment)
+      @ship.x = @player.x + 300
+      @ship.y = @player.y + 100
+      @ship.z_index = 2 # Below player but above water
 
       @static_entities = [] of StaticEntity
 
@@ -135,6 +123,7 @@ module JR
         dialog_box.update(dt)
       else
         player.update(dt, tile_map, all_collidables)
+        ship.update(dt, tile_map, all_collidables)
         static_entities.each(&.update(dt))
         warps.each(&.update(dt))
 
@@ -148,6 +137,11 @@ module JR
       # camera follows player
       @camera.look_at(@player.x, @player.y)
       @camera.update(dt)
+
+      if Input.action?(:debug)
+        @next_scene = create_scene_by_name("overworld")
+        transition_out.start
+      end
     end
 
     def update_dialogs(dt : Float32)
@@ -189,25 +183,10 @@ module JR
     def draw(draw : GSDL::Draw)
       tile_map.draw(draw, @camera)
       warps.each(&.draw(draw, @camera))
+      ship.draw(draw, @camera)
       static_entities.each(&.draw(draw, @camera))
       npcs.each(&.draw(draw, @camera))
       player.draw(draw, @camera)
-
-      # TODO: for debug, for when testing wrap facing, etc
-      # show warp collision box
-      # old_scale_x = draw.current_scale_x
-      # old_scale_y = draw.current_scale_y
-      # draw.scale = camera.zoom
-      # @warps.each do |warp|
-      #   rect = GSDL::FRect.new(
-      #     x: warp.collision_box.x - @camera.x,
-      #     y: warp.collision_box.y - @camera.y,
-      #     w: warp.collision_box.w,
-      #     h: warp.collision_box.h,
-      #   )
-      #   draw.rect_outline(rect: rect, color: Color::Magenta, z_index: 99)
-      # end
-      # draw.scale = {old_scale_x, old_scale_y}
 
       dialog_box.draw(draw)
     end

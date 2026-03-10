@@ -20,7 +20,7 @@ module JR
           if current_scene.transition_out.done?
             spawn_point_name = current_scene.next_spawn_point
             switch(next_scene)
-            
+
             # Find the spawn point in the new scene
             if new_scene = scene.as?(JR::Scene)
               if player = new_scene.get_player
