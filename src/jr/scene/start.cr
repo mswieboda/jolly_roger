@@ -2,7 +2,6 @@ module JR
   class Scene::Start < JR::Scene
     getter tile_map : GSDL::TileMap
     getter player : Player
-    getter ship : Ship
     getter npcs : Array(NPC)
     getter static_entities : Array(StaticEntity)
     getter camera : GSDL::Camera
@@ -32,12 +31,6 @@ module JR
       @player = Player.new
       @player.origin = {0.5_f32, 0.5_f32}
       @player.center(width: Game.width, height: Game.height)
-
-      @ship = Ship.new
-      # Place ship in the water near the island (x, y coordinates might need adjustment)
-      @ship.x = @player.x + 300
-      @ship.y = @player.y + 100
-      @ship.z_index = 2 # Below player but above water
 
       @static_entities = [] of StaticEntity
 
@@ -123,7 +116,6 @@ module JR
         dialog_box.update(dt)
       else
         player.update(dt, tile_map, all_collidables)
-        ship.update(dt, tile_map, all_collidables)
         static_entities.each(&.update(dt))
         warps.each(&.update(dt))
 
@@ -183,7 +175,6 @@ module JR
     def draw(draw : GSDL::Draw)
       tile_map.draw(draw, @camera)
       warps.each(&.draw(draw, @camera))
-      ship.draw(draw, @camera)
       static_entities.each(&.draw(draw, @camera))
       npcs.each(&.draw(draw, @camera))
       player.draw(draw, @camera)

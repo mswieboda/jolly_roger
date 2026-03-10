@@ -48,6 +48,8 @@ module JR
         {"palm-tree", "gfx/objs/palm-tree.png"},
         {"barrel", "gfx/objs/barrel.png"},
         {"ship-overworld", "gfx/objs/ship-overworld.png"},
+        {"ship-overworld-2", "gfx/objs/ship-overworld-2.png"},
+        {"ship-overworld-north", "gfx/objs/ship-overworld-north.png"},
       ]
     end
 

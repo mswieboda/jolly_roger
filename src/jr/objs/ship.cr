@@ -23,37 +23,23 @@ module JR
     property direction : GSDL::Direction = GSDL::Direction::Up
 
     def initialize
-      # Each frame is 512x512 based on the 2560x512 texture width
-      super(key: "ship-overworld", width: 512, height: 512)
+      # Each frame is 512x512 based on the ship-overworld-north.png texture
+      super(key: "ship-overworld-north", width: 512, height: 512)
 
       # Scale down for overworld
-      @scale = {0.25_f32, 0.25_f32}
+      @scale = {0.5_f32, 0.5_f32}
       @origin = {0.5_f32, 0.5_f32}
       @z_index = 3
 
       # used in TileMapCollidable
       @use_gravity = false
 
-      # Directional frames: 0:N, 1:NE, 2:E, 3:SE, 4:S
-      fps = 4
-
-      # Setup animations for each cardinal/ordinal direction
-      add("up", [0], fps: fps, loops: false)
-      add("up-right", [1], fps: fps, loops: false)
-      add("right", [2], fps: fps, loops: false)
-      add("down-right", [3], fps: fps, loops: false)
-      add("down", [4], fps: fps, loops: false)
-
-      # Sailing animations (same frames for now)
-      add("walk-up", [0], fps: fps, loops: true)
-      add("walk-up-right", [1], fps: fps, loops: true)
-      add("walk-right", [2], fps: fps, loops: true)
-      add("walk-down-right", [3], fps: fps, loops: true)
-      add("walk-down", [4], fps: fps, loops: true)
+      # Setup a single "idle" animation for the static sprite
+      add("idle", [0], fps: 1, loops: true)
 
       @heading = 0.0_f32
       @direction = GSDL::Direction::Up
-      play("up")
+      play("idle")
     end
 
     def moving? : Bool
@@ -130,6 +116,14 @@ module JR
 
     private def update_direction_from_heading
       h = @heading
+      
+      # Natural rotation - just use the heading directly
+      self.rotation = h.to_f32
+
+      # Flipping logic: Flip for the entire West side (180 to 360 degrees).
+      @flip_left = (h >= 180.0 && h < 360.0)
+
+      # Maintain @direction for completeness, although animations are unified now
       if h < 22.5 || h >= 337.5
         @direction = GSDL::Direction::Up
       elsif h < 67.5
@@ -150,27 +144,8 @@ module JR
     end
 
     def update_animations
-      prefix = moving? ? "walk" : "idle"
-      # map "idle" to the single frame cardinal animations
-      prefix = "" if prefix == "idle"
-
-      anim_base = case direction
-                  when .up?         then "up"
-                  when .up_right?   then "up-right"
-                  when .right?      then "right"
-                  when .down_right? then "down-right"
-                  when .down?       then "down"
-                  when .down_left?  then "down-right" # Mirror
-                  when .left?       then "right"      # Mirror
-                  when .up_left?    then "up-right"   # Mirror
-                  else "up"
-                  end
-
-      anim = prefix.empty? ? anim_base : "#{prefix}-#{anim_base}"
-
-      play(anim) if paused? || !playing?(anim)
-
-      @flip_left = direction.left? || direction.up_left? || direction.down_left?
+      # Unified animation for natural rotation
+      play("idle") unless playing?("idle")
     end
 
     def draw(draw : GSDL::Draw, camera : GSDL::Camera? = nil, flip_horizontal : Bool = false)
