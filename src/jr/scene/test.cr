@@ -40,6 +40,8 @@ module JR
         target_scene: "start",
         target_spawn_point: "start_to_test"
       )
+      warp.trigger_direction = GSDL::Direction::Up
+      warp.arrival_direction = GSDL::Direction::Down
       warp.x = 200
       warp.y = 200
       @warps << warp

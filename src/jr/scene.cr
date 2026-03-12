@@ -3,6 +3,7 @@ module JR
     property warps : Array(Warp) = [] of Warp
     property next_scene : GSDL::Scene?
     property next_spawn_point : String?
+    property next_arrival_direction : GSDL::Direction? = nil
     property? can_warp : Bool = false
 
     def initialize(name : Symbol)
@@ -25,12 +26,12 @@ module JR
       if player = get_player
         # Find if we are currently colliding with any warp
         colliding_with_any = warps.any? { |w| player.collides?(w) }
+        valid_warp = warps.find { |w| player.collides?(w) && (w.trigger_direction.nil? || player.direction == w.trigger_direction) }
 
         if @can_warp
-          if colliding_with_any
+          if valid_warp
             # Warp triggered
-            warp = warps.find { |w| player.collides?(w) }.not_nil!
-            on_warp(warp)
+            on_warp(valid_warp)
           end
         else
           # If we were not allowed to warp, we must wait until we are NOT
@@ -46,6 +47,7 @@ module JR
       @can_warp = false
       @next_scene = create_scene_by_name(warp.target_scene)
       @next_spawn_point = warp.target_spawn_point
+      @next_arrival_direction = warp.arrival_direction
       transition_out.start
     end
 

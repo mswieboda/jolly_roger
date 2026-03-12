@@ -3,6 +3,8 @@ module JR
     property name : String
     property target_scene : String
     property target_spawn_point : String
+    property trigger_direction : GSDL::Direction? = nil
+    property arrival_direction : GSDL::Direction? = nil
 
     def initialize(@name : String, key : String, width : Int32, height : Int32, @target_scene : String, @target_spawn_point : String, @dialog_key : String? = nil)
       super(key: key, width: width, height: height)

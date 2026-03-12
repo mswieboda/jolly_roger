@@ -19,6 +19,7 @@ module JR
         if next_scene = current_scene.next_scene
           if current_scene.transition_out.done?
             spawn_point_name = current_scene.next_spawn_point
+            arrival_direction = current_scene.next_arrival_direction
             switch(next_scene)
 
             # Find the spawn point in the new scene
@@ -30,6 +31,9 @@ module JR
                   if spawn_point
                     player.x = spawn_point.x
                     player.y = spawn_point.y
+                    if arrival_direction
+                      player.direction = arrival_direction
+                    end
                   end
                 end
               end
