@@ -130,7 +130,7 @@ module JR
       @camera.look_at(@player.x, @player.y)
       @camera.update(dt)
 
-      if Input.action?(:debug)
+      if Keys.just_pressed?(Keys::Tab)
         @next_scene = create_scene_by_name("overworld")
         transition_out.start
       end

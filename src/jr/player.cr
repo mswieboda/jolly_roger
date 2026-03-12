@@ -7,11 +7,5 @@ module JR
     def running? : Bool
       Input.action?(:run)
     end
-
-    def update(dt : Float32, tile_map : GSDL::TileMap, collidables : Array(GSDL::Collidable))
-      @debug = !@debug if Input.action?(:debug)
-
-      super(dt, tile_map, collidables)
-    end
   end
 end

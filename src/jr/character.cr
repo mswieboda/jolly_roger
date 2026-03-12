@@ -8,7 +8,6 @@ module JR
 
     getter idle_timer : GSDL::Timer
     getter? flip_left
-    property? debug = false
 
     def initialize(key : String, width : Int32, height : Int32)
       super(key: key, width: width, height: height)
@@ -145,22 +144,6 @@ module JR
         draw: draw,
         camera: camera,
         flip_horizontal: flip_horizontal || flip_left?
-      )
-
-      draw_debug(draw: draw, camera: camera) if debug?
-    end
-
-    def draw_debug(draw : GSDL::Draw, camera : GSDL::Camera? = nil)
-      rect = self.collision_box
-      draw.rect_outline(
-        rect: GSDL::FRect.new(
-          x: rect.x - (camera.try(&.x) || 0),
-          y: rect.y - (camera.try(&.y) || 0),
-          w: rect.w,
-          h: rect.h
-        ),
-        color: GSDL::Color::Lime,
-        z_index: 100
       )
     end
   end

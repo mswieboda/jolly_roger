@@ -19,7 +19,7 @@ default: run
 build:
 	@echo "Building..."
 	$(MKDIR_CMD) $(BUILD_DIR)
-	$(CRYSTAL_COMPILER) build $(SOURCE_DIR)/$(SOURCE_FILE).cr -o $(BUILD_DIR)/$(SOURCE_FILE)_debug --link-flags "$(LINKFLAGS)" --error-trace
+	$(CRYSTAL_COMPILER) build $(SOURCE_DIR)/$(SOURCE_FILE).cr -o $(BUILD_DIR)/$(SOURCE_FILE)_debug --link-flags "$(LINKFLAGS)" --error-trace -p
 
 run: build
 	@echo "Running..."
@@ -27,7 +27,7 @@ run: build
 
 $(PACKER_BIN):
 	@echo "Installing GameSDL tools..."
-	$(CRYSTAL_COMPILER) lib/game_sdl/install_gsdl_tools.cr
+	$(CRYSTAL_COMPILER) lib/game_sdl/install_gsdl_tools.cr --release --no-debug -p
 
 install_gsdl_tools: $(PACKER_BIN)
 
@@ -38,7 +38,7 @@ packer: $(PACKER_BIN)
 release:
 	@echo "Building release..."
 	$(MKDIR_CMD) $(BUILD_DIR)
-	$(CRYSTAL_COMPILER) build $(SOURCE_DIR)/$(SOURCE_FILE).cr -o $(BUILD_DIR)/$(SOURCE_FILE) --release --link-flags "$(LINKFLAGS)" --no-debug
+	$(CRYSTAL_COMPILER) build $(SOURCE_DIR)/$(SOURCE_FILE).cr -o $(BUILD_DIR)/$(SOURCE_FILE) --release --link-flags "$(LINKFLAGS)" --no-debug -p
 	@echo "Running release..."
 	./$(BUILD_DIR)/$(SOURCE_FILE)
 

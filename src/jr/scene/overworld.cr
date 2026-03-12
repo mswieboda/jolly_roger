@@ -25,6 +25,8 @@ module JR
       Input.set(:move_left) { Keys.pressed?([Keys::A, Keys::Left]) }
       Input.set(:move_down) { Keys.pressed?([Keys::S, Keys::Down]) }
       Input.set(:move_right) { Keys.pressed?([Keys::D, Keys::Right]) }
+      Input.set(:speed_up) { Keys.just_pressed?([Keys::W, Keys::Up]) }
+      Input.set(:speed_down) { Keys.just_pressed?([Keys::S, Keys::Down]) }
       Input.set(:run) { Keys.pressed?([Keys::LShift, Keys::RShift]) }
       Input.set(:action) { Keys.just_pressed?([Keys::Return, Keys::Space, Keys::E]) }
       Input.set(:menu) { Keys.just_pressed?([Keys::Escape]) }
@@ -58,6 +60,11 @@ module JR
 
       # Update ship with its own movement logic
       @ship.update(dt, tile_map, [] of GSDL::Collidable)
+
+      if @ship.just_anchored?
+        @camera.shake(duration: 0.2_f32, intensity: 5.0_f32)
+        @ship.just_anchored = false
+      end
 
       # Camera follows ship
       @camera.look_at(@ship.x, @ship.y)

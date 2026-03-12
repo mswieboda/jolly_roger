@@ -2,6 +2,23 @@ module JR
   class Ship < GSDL::AnimatedSprite
     include GSDL::TileMapCollidable
 
+    enum SpeedState
+      None
+      Low
+      Half
+      Full
+
+      def multiplier : Float32
+        case self
+        when None then 0.0_f32
+        when Low  then 0.33_f32
+        when Half then 0.66_f32
+        when Full then 1.0_f32
+        else           0.0_f32
+        end
+      end
+    end
+
     # Static property to disable/enable movement controls
     property? static : Bool = true
 
@@ -14,12 +31,32 @@ module JR
     # Movement speed
     property move_speed : Float32 = 128.0_f32
 
+    # Current speed state
+    property speed_state : SpeedState = SpeedState::None
+
+    # Current actual speed multiplier for interpolation
+    property current_speed_multiplier : Float32 = 0.0_f32
+
+    # How fast the ship accelerates (multiplier units per second)
+    property acceleration : Float32 = 0.5_f32
+
+    # How fast the ship decelerates (multiplier units per second)
+    property deceleration : Float32 = 0.25_f32
+
+    # How fast the ship decelerates when anchor is dropped
+    property anchor_deceleration : Float32 = 0.75_f32
+
+    # Timer for the anchor "catch" effect
+    getter anchor_timer : GSDL::Timer
+
+    # Event flag for when the anchor catches
+    property? just_anchored : Bool = false
+
     # Movement deltas for animation logic
     property dx : Float32 = 0.0_f32
     property dy : Float32 = 0.0_f32
 
     getter? flip_left : Bool = false
-    property? debug : Bool = false
     property direction : GSDL::Direction = GSDL::Direction::Up
 
     def initialize
@@ -39,6 +76,7 @@ module JR
 
       @heading = 0.0_f32
       @direction = GSDL::Direction::Up
+      @anchor_timer = GSDL::Timer.new(0.5.seconds)
       play("idle")
     end
 
@@ -48,12 +86,33 @@ module JR
 
     def update(dt : Float32, tile_map : GSDL::TileMap, collidables : Array(GSDL::Collidable))
       unless static?
+        handle_speed_input
         handle_rotation(dt)
         handle_movement(dt, tile_map, collidables)
       end
 
       update_animations
       super(dt)
+    end
+
+    private def handle_speed_input
+      if GSDL::Input.action?(:speed_up)
+        case @speed_state
+        when .none? then @speed_state = SpeedState::Low
+        when .low?  then @speed_state = SpeedState::Half
+        when .half? then @speed_state = SpeedState::Full
+        end
+      end
+
+      if GSDL::Input.action?(:speed_down)
+        case @speed_state
+        when .full? then @speed_state = SpeedState::Half
+        when .half? then @speed_state = SpeedState::Low
+        when .low?
+          @speed_state = SpeedState::None
+          @anchor_timer.restart
+        end
+      end
     end
 
     private def handle_rotation(dt : Float32)
@@ -72,15 +131,31 @@ module JR
     end
 
     private def handle_movement(dt : Float32, tile_map : GSDL::TileMap, collidables : Array(GSDL::Collidable))
-      thrust = 0.0_f32
-      thrust += 1.0_f32 if GSDL::Input.action?(:move_up) || GSDL::Keys.pressed?(GSDL::Keys::W)
-      thrust -= 0.5_f32 if GSDL::Input.action?(:move_down) || GSDL::Keys.pressed?(GSDL::Keys::S)
+      target_multiplier = speed_state.multiplier
 
-      if thrust != 0
+      # Interpolate current_speed_multiplier towards target_multiplier
+      if @current_speed_multiplier < target_multiplier
+        @current_speed_multiplier += acceleration * dt
+        @current_speed_multiplier = target_multiplier if @current_speed_multiplier > target_multiplier
+      elsif @current_speed_multiplier > target_multiplier
+        # Use aggressive deceleration if anchor is dropped (speed_state is None)
+        rate = speed_state.none? ? anchor_deceleration : deceleration
+        @current_speed_multiplier -= rate * dt
+        
+        # Hard stop when anchor timer finishes
+        if speed_state.none? && @anchor_timer.done? && @current_speed_multiplier > 0
+          @current_speed_multiplier = 0.0_f32
+          @just_anchored = true
+        end
+
+        @current_speed_multiplier = target_multiplier if @current_speed_multiplier < target_multiplier
+      end
+
+      if @current_speed_multiplier > 0
         # 0 heading is North (-Y)
         rad = (heading - 90.0_f32) * (Math::PI / 180.0_f32)
-        @dx = Math.cos(rad).to_f32 * thrust
-        @dy = Math.sin(rad).to_f32 * thrust
+        @dx = Math.cos(rad).to_f32 * @current_speed_multiplier
+        @dy = Math.sin(rad).to_f32 * @current_speed_multiplier
 
         speed = move_speed * dt
 
@@ -89,12 +164,18 @@ module JR
         self.x += dx * speed
         if collides_with_anything?(collidables, tile_map)
           self.x = prev_x
+          # Stop ship completely on collision
+          @current_speed_multiplier = 0.0_f32
+          @speed_state = SpeedState::None
         end
 
         prev_y = y
         self.y += dy * speed
         if collides_with_anything?(collidables, tile_map)
           self.y = prev_y
+          # Stop ship completely on collision
+          @current_speed_multiplier = 0.0_f32
+          @speed_state = SpeedState::None
         end
       else
         @dx = 0.0_f32
@@ -155,21 +236,36 @@ module JR
         flip_horizontal: flip_horizontal || flip_left?
       )
 
-      draw_debug(draw: draw, camera: camera) if debug?
+      draw_sails(draw, camera)
     end
 
-    def draw_debug(draw : GSDL::Draw, camera : GSDL::Camera? = nil)
-      rect = self.collision_box
-      draw.rect_outline(
-        rect: GSDL::FRect.new(
-          x: rect.x - (camera.try(&.x) || 0),
-          y: rect.y - (camera.try(&.y) || 0),
-          w: rect.w,
-          h: rect.h
-        ),
-        color: GSDL::Color::Lime,
-        z_index: 100
-      )
+    private def draw_sails(draw : GSDL::Draw, camera : GSDL::Camera? = nil)
+      return if speed_state.none?
+
+      # Placeholder sails: simple bars indicating speed level
+      num_bars = case speed_state
+                 when .low? then 1
+                 when .half? then 2
+                 when .full? then 3
+                 else 0
+                 end
+
+      cam_x = camera.try(&.x) || 0
+      cam_y = camera.try(&.y) || 0
+
+      # Draw simple bars for sails placeholder above the ship
+      num_bars.times do |i|
+        draw.rect_fill(
+          rect: GSDL::FRect.new(
+            x: (draw_x - cam_x) + (draw_width / 2) - 15 + (i * 12),
+            y: (draw_y - cam_y) + (draw_height / 2) - 100,
+            w: 8,
+            h: 30
+          ),
+          color: GSDL::Color::White,
+          z_index: @z_index + 1
+        )
+      end
     end
 
     def collision_bounding_box : GSDL::FRect

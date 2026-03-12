@@ -26,10 +26,6 @@ module JR
       Input.set(:menu_up) { Keys.just_pressed?([Keys::W, Keys::Up]) }
       Input.set(:menu_down) { Keys.just_pressed?([Keys::S, Keys::Down]) }
       Input.set(:menu_select) { Keys.just_pressed?([Keys::Return, Keys::Space, Keys::E]) }
-
-      {% unless flag?(:release) %}
-        Input.set(:debug) { Keys.just_pressed?(Keys::Tab) }
-      {% end %}
     end
 
     def load_fonts
@@ -56,6 +52,7 @@ module JR
     def load_tile_maps
       [
         {"island", "data/maps/island.json"},
+        {"land", "data/maps/map.json"},
         {"sea", "data/maps/sea.json"},
       ]
     end
