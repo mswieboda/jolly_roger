@@ -61,7 +61,7 @@ module JR
 
     def initialize
       # Each frame is 512x512 based on the ship-overworld-north.png texture
-      super(key: "ship-overworld-north", width: 512, height: 512)
+      super(key: "ship-overworld-north", width: 174, height: 484)
 
       # Scale down for overworld
       @scale = {0.5_f32, 0.5_f32}

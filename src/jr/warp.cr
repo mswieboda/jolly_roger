@@ -6,11 +6,10 @@ module JR
     property trigger_direction : GSDL::Direction? = nil
     property arrival_direction : GSDL::Direction? = nil
 
-    def initialize(@name : String, key : String, width : Int32, height : Int32, @target_scene : String, @target_spawn_point : String, @dialog_key : String? = nil)
+    def initialize(@name : String, key : String, width : Int32, height : Int32, @target_scene : String, @target_spawn_point : String, @dialog_key : String? = nil, @z_index = 1)
       super(key: key, width: width, height: height)
 
       @origin = {0.5_f32, 0.5_f32}
-      @z_index = 1
       @scale = {2_f32, 2_f32}
       @tint = Color::Black
     end

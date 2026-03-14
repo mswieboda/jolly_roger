@@ -4,6 +4,7 @@ module JR
     getter player : Player
     getter npcs : Array(NPC)
     getter static_entities : Array(StaticEntity)
+    getter ship : Ship
     getter camera : GSDL::Camera
     getter dialog_box : GSDL::DialogBox
 
@@ -32,8 +33,14 @@ module JR
       @player.origin = {0.5_f32, 0.5_f32}
       @player.center(width: Game.width, height: Game.height)
 
-      @static_entities = [] of StaticEntity
+      @ship = Ship.new
+      @ship.scale = {1_f32, 1_f32}
+      @ship.rotation = 90
+      @ship.x = 480
+      @ship.y = 176
+      @ship.static = true # Disable ship movement for this scene
 
+      @static_entities = [] of StaticEntity
       @static_entities << Sign.new(x: @player.x + 64, y: @player.y, dialog_key: "sign_post")
       e_tint = Color::Magenta
       e_tint.a = 128
@@ -86,6 +93,19 @@ module JR
 
       # Initialize warps
       warp = Warp.new(
+        name: "start_to_overworld",
+        key: "barrel",
+        width: 32,
+        height: 32,
+        target_scene: "overworld",
+        target_spawn_point: "overworld_to_start",
+        z_index: 3
+      )
+      warp.x = 448
+      warp.y = 256
+      @warps << warp
+
+      warp = Warp.new(
         name: "start_to_test",
         key: "barrel",
         width: 32,
@@ -93,10 +113,8 @@ module JR
         target_scene: "test",
         target_spawn_point: "test_to_start"
       )
-
       warp.x = 352
       warp.y = 336
-
       @warps << warp
     end
 
@@ -174,6 +192,7 @@ module JR
 
     def draw(draw : GSDL::Draw)
       tile_map.draw(draw, @camera)
+      ship.draw(draw, @camera)
       warps.each(&.draw(draw, @camera))
       static_entities.each(&.draw(draw, @camera))
       npcs.each(&.draw(draw, @camera))
